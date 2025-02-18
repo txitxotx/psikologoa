@@ -1,8 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Ekintzak() {
   const [ekintzak, setEkintzak] = useState([]);
   const [form, setForm] = useState({ ekimena: "", kategoria: "", sentimendua: "" });
+
+  // Cargar los datos desde localStorage al montar el componente
+  useEffect(() => {
+    const storedEkintzak = JSON.parse(localStorage.getItem("ekintzak"));
+    if (storedEkintzak) {
+      setEkintzak(storedEkintzak);
+    }
+  }, []);
+
+  // Guardar los datos en localStorage cada vez que se actualiza el estado de "ekintzak"
+  useEffect(() => {
+    if (ekintzak.length > 0) {
+      localStorage.setItem("ekintzak", JSON.stringify(ekintzak));
+    }
+  }, [ekintzak]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -10,7 +25,8 @@ export default function Ekintzak() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setEkintzak([...ekintzak, { ...form, data: new Date().toISOString().split("T")[0] }]);
+    const newEkintzak = [...ekintzak, { ...form, data: new Date().toISOString().split("T")[0] }];
+    setEkintzak(newEkintzak);
     setForm({ ekimena: "", kategoria: "", sentimendua: "" });
   };
 
